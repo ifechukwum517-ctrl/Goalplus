@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Story - StoryPlus</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:Arial,sans-serif;background:#ffffff;color:#222}
+.header{background:#ffffff;padding:12px 5%;border-bottom:2px solid #c20000;position:sticky;top:0;z-index:10;display:flex;align-items:center}
+.back-btn{display:inline-block;background:#c20000;color:#fff;padding:16px 30px;border-radius:30px;text-decoration:none;font-weight:900;font-size:18px;box-shadow:0 4px 15px rgba(194,0,0,0.4)}
+.box{max-width:800px;margin:20px auto;padding:0 5%}
+.box img{width:100%;height:auto;max-height:520px;object-fit:cover;border-radius:14px;margin:16px 0;display:block}
+.box h1{font-size:27px;color:#111;line-height:1.3;margin:14px 0;font-weight:900}
+.box p{color:#333;line-height:2;font-size:17px;white-space:pre-wrap;margin:14px 0}
+.tag{background:#c20000;color:#fff;font-size:12px;font-weight:900;padding:6px 12px;border-radius:5px;display:inline-block}
+</style>
+</head>
+<body>
+<div class="header">
+  <a href="index.html" class="back-btn">← BACK TO HOME</a>
+</div>
+<div class="box" id="newsBox">
+  <p style="text-align:center;padding:60px;color:#888;font-size:18px">Loading story... ⏳</p>
+</div>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+<script>
+const firebaseConfig={apiKey:"AIzaSyB1h6Rok1WcXGFeYo4f_ObX4dX8moGzHDk",authDomain:"storyplus-373d6.firebaseapp.com",databaseURL:"https://storyplus-373d6-default-rtdb.firebaseio.com",projectId:"storyplus-373d6"};
+if(!firebase.apps.length)firebase.initializeApp(firebaseConfig);
+const db=firebase.database();
+const id = new URLSearchParams(window.location.search).get('id');
+const box = document.getElementById('newsBox');
+if(!id){
+  box.innerHTML = "<h1>No story selected</h1><p>Go back to homepage and click any story.</p><br><br><a href='index.html' class='back-btn'>← BACK TO HOME</a>";
+}else{
+  db.ref('stories/'+id).once('value').then(snap=>{
+    const n = snap.val();
+    if(!n){
+      box.innerHTML = "<h1>Story not found</h1><p>This story don delete.</p><br><br><a href='index.html' class='back-btn'>← BACK TO HOME</a>";
+      return;
+    }
+    document.title = n.title + " - StoryPlus";
+    const fullText = n.fullContent || n.fullStory || n.content || n.story || n.description || "";
+    box.innerHTML = `
+      <span class="tag">${n.category||'Life Story'}</span>
+      <h1>${n.title}</h1>
+      <img src="${n.image||n.img}" loading="lazy" onerror="this.src='https://via.placeholder.com/800x500'">
+      <p>${fullText}</p>
+      <br><br><br>
+      <a href="index.html" class="back-btn">← BACK TO HOME</a>
+      <br><br><br>
+    `;
+  });
+}
+</script>
+</body>
+</html>

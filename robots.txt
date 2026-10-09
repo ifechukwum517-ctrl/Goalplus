@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://storyplus.com.ng/sitemap.xml
